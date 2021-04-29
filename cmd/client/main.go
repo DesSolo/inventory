@@ -2,10 +2,10 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"errors"
 	"flag"
-	"inventory/collector"
+	"inventory/internal/collector"
+	"inventory/internal/storage"
 	"log"
 	"os"
 	"regexp"
@@ -13,17 +13,13 @@ import (
 	"strings"
 )
 
-type PcInfo struct {
-	WH string `json:"wh"`
-	UserName string `json:"username"`
-	HostName string `json:"hostname"`
-	MacAddress []string `json:"macs"`
-	SerialNumber string `json:"serial"`
-	Manufacturer string `json:"manufacturer"`
-	SystemVersion string `json:"system_version"`
-}
+const (
+	serverURL = "http://127.0.0.1"
+	username  = "inventory"
+	password  = "Kmx4r9d0c@!"
+)
 
-func readWh()  string {
+func readWh() string {
 	reader := bufio.NewReader(os.Stdin)
 	print("Цифры на наклейке с обратной стороны ноутбука: ")
 	text, _ := reader.ReadString('\n')
@@ -32,10 +28,12 @@ func readWh()  string {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	if !matched {
 		println("Неверный формат\n пример wh1234567 whh123456")
 		return readWh()
 	}
+
 	return wh
 }
 
@@ -50,7 +48,7 @@ func GetCurrentExporter() (collector.Exporter, error) {
 	}
 }
 
-func main()  {
+func main() {
 	var silentMode bool
 	flag.BoolVar(&silentMode, "s", false, "silent mode")
 	flag.Parse()
@@ -59,23 +57,15 @@ func main()  {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	InventoryNumber := ""
+
+	var InventoryNumber string
 	if !silentMode {
 		InventoryNumber = readWh()
 	}
-	data := PcInfo{
-		InventoryNumber,
-		collector.CurrentUser(),
-		collector.Hostname(),
-		collector.MacAddr(),
-		exporter.GetSerialNumber(),
-		exporter.GetManufacturer(),
-		exporter.GetSystemVersion(),
-	}
-	js, err := json.Marshal(data)
-	if err != nil {
+
+	data := collector.BuildHostInfo(exporter, InventoryNumber)
+	st := storage.NewRest(serverURL, username, password)
+	if err := st.Send(&data); err != nil {
 		log.Fatalln(err)
 	}
-	println(string(js))
 }
-
