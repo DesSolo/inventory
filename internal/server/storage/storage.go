@@ -4,8 +4,9 @@ import "inventory/internal/collector"
 
 type Storage interface {
 	Save(collector.HostInfo) error
-	GetAll() ([]collector.HostInfo, error)
 	IsExist(collector.HostInfo) (bool, error)
-	SearchByWH(string) (*collector.HostInfo, error)
-	SearchBySerial(string) (*collector.HostInfo, error)
+	GetAll() ([]collector.HostInfo, error)
+	GetByWH(string) (*collector.HostInfo, error)
+	GetBySerial(string) (*collector.HostInfo, error)
+	DeleteBySerial(string) error
 }
