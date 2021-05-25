@@ -2,21 +2,18 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"inventory/internal/collector"
-	"inventory/internal/storage"
+	"inventory/internal/uploader"
 	"log"
 	"os"
 	"regexp"
-	"runtime"
 	"strings"
 )
 
 const (
-	serverURL = "http://127.0.0.1"
-	username  = "inventory"
-	password  = "Kmx4r9d0c@!"
+	serverURL = "http://127.0.0.1:8090/api/v1/client"
+	token     = "inventory"
 )
 
 func readWh() string {
@@ -37,15 +34,8 @@ func readWh() string {
 	return wh
 }
 
-func GetCurrentExporter() (collector.Exporter, error) {
-	switch runtime.GOOS {
-	case "linux":
-		return &collector.Linux{}, nil
-	case "windows":
-		return &collector.Windows{}, nil
-	default:
-		return nil, errors.New("os decode error")
-	}
+func GetCurrentExporter() (collector.OSExporter, error) {
+	return &collector.Exporter{}, nil
 }
 
 func main() {
@@ -63,9 +53,9 @@ func main() {
 		InventoryNumber = readWh()
 	}
 
-	data := collector.BuildHostInfo(exporter, InventoryNumber)
-	st := storage.NewRest(serverURL, username, password)
-	if err := st.Send(&data); err != nil {
+	data := collector.CollectHostInfo(exporter, InventoryNumber)
+	up := uploader.NewRest(serverURL, token)
+	if err := up.Upload(&data); err != nil {
 		log.Fatalln(err)
 	}
 }

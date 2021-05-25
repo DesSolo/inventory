@@ -1,36 +1,13 @@
 package collector
 
 import (
-	"inventory_old/collector"
 	"log"
 	"net"
 	"os"
 	"os/user"
 )
 
-type HostInfo struct {
-	WH            string   `json:"wh"`
-	UserName      string   `json:"username"`
-	HostName      string   `json:"hostname"`
-	MacAddress    []string `json:"macs"`
-	SerialNumber  string   `json:"serial"`
-	Manufacturer  string   `json:"manufacturer"`
-	SystemVersion string   `json:"system_version"`
-}
-
-func BuildHostInfo(exporter Exporter, wh string) HostInfo {
-	return HostInfo{
-		wh,
-		collector.CurrentUser(),
-		collector.Hostname(),
-		collector.MacAddr(),
-		exporter.GetSerialNumber(),
-		exporter.GetManufacturer(),
-		exporter.GetSystemVersion(),
-	}
-}
-
-type Exporter interface {
+type OSExporter interface {
 	GetSerialNumber() string
 	GetManufacturer() string
 	GetSystemVersion() string
