@@ -4,7 +4,7 @@ Easy inventory client and server
 Warning!!!  
 Please assemble the client yourself. You must specify secret keys and the server address.
 ```shell
-make build-client USERNAME=user PASSWORD=passwd SERVER_URL=http://127.0.0.1:8080/upload
+make build-client TOKEN=secret SERVER_URL=http://127.0.0.1:8080/api/v1/client
 ```
 `inventory-client-linux`  
 `inventory-client-windows.exe`
@@ -18,7 +18,7 @@ make build-client USERNAME=user PASSWORD=passwd SERVER_URL=http://127.0.0.1:8080
 |Kev|Default|Example|Description|
 |---|---|---|---|
 |LISTEN_ADDRESS|_no_|_:8080_ or _127.0.0.1:8080_|server listen address|
-|INVENTORY_TOKEN|_no_|_mySuperSecretToken_|secret token must be the same for clients and on the server|
+|TOKEN|_no_|_mySuperSecretToken_|secret token must be the same for clients and on the server|
 |STORAGE_TYPE|_memory_|see more TODO|data storage types|
 
 ### supported storage types

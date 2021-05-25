@@ -50,6 +50,7 @@ func (s *RestServer) loadRoutes(r chi.Router) {
 
 		// admin api
 		r.Route("/admin", func(r chi.Router) {
+			r.Get("/export", s.adminApi.Export())
 			r.Route("/uploads", func(r chi.Router) {
 				r.Get("/", s.adminApi.Uploads())
 				r.Route("/{serial}", func(r chi.Router) {

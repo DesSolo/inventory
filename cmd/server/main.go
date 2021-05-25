@@ -19,7 +19,7 @@ func getStorage(storageName string) (storage.Storage, error) {
 
 func main() {
 	listenAddress := config.GetEnvOrFatal("LISTEN_ADDRESS")
-	token := config.GetEnvOrFatal("INVENTORY_TOKEN")
+	token := config.GetEnvOrFatal("TOKEN")
 	persistantStorage, err := getStorage(
 		config.GetEnvOrDefault("STORAGE_TYPE", "memory"),
 	)
