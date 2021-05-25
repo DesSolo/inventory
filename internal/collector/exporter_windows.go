@@ -1,24 +1,30 @@
+// +build windows
+
 package collector
 
 import "strings"
 
 func wmicInfo(arg string) string {
-	out := RunShell(ShellCommand{"wmic", arg})
+	cmd := ShellCommand{
+		Command:   "wmic",
+		Arguments: arg,
+	}
+	out := cmd.Execute()
 	lines := strings.Split(out, "\n")
 	return lines[len(lines)-1]
-
 }
 
-type Windows struct{}
+type Exporter struct{}
 
-func (w *Windows) GetSerialNumber() string {
+func (e *Exporter) GetSerialNumber() string {
 	return wmicInfo("bios get serialnumber")
 }
 
-func (w *Windows) GetManufacturer() string {
+func (e *Exporter) GetManufacturer() string {
 	return wmicInfo("computersystem get manufacturer")
+
 }
 
-func (w *Windows) GetSystemVersion() string {
+func (e *Exporter) GetSystemVersion() string {
 	return wmicInfo("computersystem get model")
 }
