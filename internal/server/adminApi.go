@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 
@@ -18,11 +19,13 @@ func (a *adminApi) Uploads() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hil, err := a.rs.storage.GetAll()
 		if err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 		resp, err := json.Marshal(hil)
 		if err != nil {
+			log.Printf("fault marshall json err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -39,6 +42,7 @@ func (a *adminApi) Delete() http.HandlerFunc {
 			return
 		}
 		if err := a.rs.storage.DeleteBySerial(serial); err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -50,6 +54,7 @@ func (a *adminApi) Export() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hil, err := a.rs.storage.GetAll()
 		if err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -64,6 +69,7 @@ func (a *adminApi) Export() http.HandlerFunc {
 				hi.WH, hi.UserName, hi.HostName, hi.SerialNumber, hi.Manufacturer, hi.SystemVersion, strings.Join(hi.MacAddress, "|"),
 			})
 			if err != nil {
+				log.Printf("fault write csv err: %s", err)
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				return
 			}

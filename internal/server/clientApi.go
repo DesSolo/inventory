@@ -17,6 +17,7 @@ func (c *clientApi) IsExist(w http.ResponseWriter, r *http.Request) {
 	if wh != "" {
 		hi, err := c.rs.storage.GetByWH(wh)
 		if err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -32,6 +33,7 @@ func (c *clientApi) IsExist(w http.ResponseWriter, r *http.Request) {
 	if serial != "" {
 		hi, err := c.rs.storage.GetBySerial(serial)
 		if err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -49,6 +51,7 @@ func (c *clientApi) Upload(checkExist bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var hi collector.HostInfo
 		if err := json.NewDecoder(r.Body).Decode(&hi); err != nil {
+			log.Printf("fault decode json err: %s", err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
@@ -61,6 +64,7 @@ func (c *clientApi) Upload(checkExist bool) http.HandlerFunc {
 		if checkExist {
 			isExist, err := c.rs.storage.IsExist(hi)
 			if err != nil {
+				log.Printf("fault call storage err: %s", err)
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				return
 			}
@@ -70,6 +74,7 @@ func (c *clientApi) Upload(checkExist bool) http.HandlerFunc {
 		}
 
 		if err := c.rs.storage.Save(hi); err != nil {
+			log.Printf("fault call storage err: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
