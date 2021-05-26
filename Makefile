@@ -1,7 +1,7 @@
 PROJECT_NAME=$(shell basename "$(PWD)")
 BIN_DIR=bin
 VERSION=$(shell cat VERSION)
-LDFLAGS_CLIENT="-w -s -X client.main.serverURL=${SERVER_URL} -X client.main.token=${TOKEN}"
+LDFLAGS_CLIENT="-w -s -X main.serverURL=${SERVER_URL} -X main.token=${TOKEN}"
 
 vet:
 	go vet ./...
