@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"encoding/json"
+	"inventory/internal/collector"
 	"log"
 	"net/http"
 	"strings"
@@ -47,6 +48,30 @@ func (a *adminApi) Delete() http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (a *adminApi) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var hi collector.HostInfo
+		if err := json.NewDecoder(r.Body).Decode(&hi); err != nil {
+			log.Printf("fault decode json err: %s", err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		if err := hi.Validate(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := a.rs.storage.Save(hi); err != nil {
+			log.Printf("fault call storage err: %s", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 

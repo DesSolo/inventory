@@ -37,6 +37,7 @@ func (s *RestServer) loadMiddlewares(r chi.Router) {
 }
 
 func (s *RestServer) loadRoutes(r chi.Router) {
+	// api router
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Use(DefaultContentType("application/json"))
 
@@ -55,9 +56,9 @@ func (s *RestServer) loadRoutes(r chi.Router) {
 				r.Get("/", s.adminApi.Uploads())
 				r.Route("/{serial}", func(r chi.Router) {
 					r.Delete("/", s.adminApi.Delete())
+					r.Put("/", s.adminApi.Update())
 				})
 			})
-
 		})
 	})
 }
@@ -66,5 +67,6 @@ func (s *RestServer) Run(address string) error {
 	r := chi.NewRouter()
 	s.loadMiddlewares(r)
 	s.loadRoutes(r)
+
 	return http.ListenAndServe(address, r)
 }
