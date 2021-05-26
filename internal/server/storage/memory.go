@@ -33,7 +33,7 @@ func (s *MemoryStorage) IsExist(hi collector.HostInfo) (bool, error) {
 	return exist, nil
 }
 
-func (s *MemoryStorage) SearchByWH(wh string) (*collector.HostInfo, error) {
+func (s *MemoryStorage) GetByWH(wh string) (*collector.HostInfo, error) {
 	hil, err := s.GetAll()
 	if err != nil {
 		return nil, err
@@ -48,7 +48,12 @@ func (s *MemoryStorage) SearchByWH(wh string) (*collector.HostInfo, error) {
 	return nil, nil
 }
 
-func (s *MemoryStorage) SearchBySerial(serial string) (*collector.HostInfo, error) {
+func (s *MemoryStorage) GetBySerial(serial string) (*collector.HostInfo, error) {
 	hi := s.st[serial]
 	return hi, nil
+}
+
+func (s *MemoryStorage) DeleteBySerial(serial string) error {
+	delete(s.st, serial)
+	return nil
 }

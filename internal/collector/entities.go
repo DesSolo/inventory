@@ -31,6 +31,7 @@ func (h *HostInfo) Validate() error {
 	if h.SystemVersion == "" {
 		return errors.New("value system_version is empty")
 	}
+	
 	return nil
 }
 

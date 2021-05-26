@@ -37,25 +37,28 @@ func (s *RestServer) loadMiddlewares(r chi.Router) {
 }
 
 func (s *RestServer) loadRoutes(r chi.Router) {
+	// api router
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Use(func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				next.ServeHTTP(w, r)
-			})
-
-		})
+		r.Use(DefaultContentType("application/json"))
 
 		// client api
 		r.Route("/client", func(r chi.Router) {
 			r.Use(TokenAuthMiddleware(s.token))
-			r.Post("/upload", s.clientApi.Upload)
+			r.Post("/upload", s.clientApi.Upload(true))
+			r.Post("/upload/force", s.clientApi.Upload(false))
 			r.Get("/is_exist", s.clientApi.IsExist)
 		})
 
 		// admin api
 		r.Route("/admin", func(r chi.Router) {
-			r.Get("/uploads", s.adminApi.Uploads())
+			r.Get("/export", s.adminApi.Export())
+			r.Route("/uploads", func(r chi.Router) {
+				r.Get("/", s.adminApi.Uploads())
+				r.Route("/{serial}", func(r chi.Router) {
+					r.Delete("/", s.adminApi.Delete())
+					r.Put("/", s.adminApi.Update())
+				})
+			})
 		})
 	})
 }
@@ -64,5 +67,6 @@ func (s *RestServer) Run(address string) error {
 	r := chi.NewRouter()
 	s.loadMiddlewares(r)
 	s.loadRoutes(r)
+
 	return http.ListenAndServe(address, r)
 }
