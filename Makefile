@@ -3,6 +3,12 @@ BIN_DIR=bin
 VERSION=$(shell cat VERSION)
 LDFLAGS_CLIENT="-w -s -X client.main.serverURL=${SERVER_URL} -X client.main.token=${TOKEN}"
 
+vet:
+	go vet ./...
+
+test:
+	go test ./... -v
+
 clean:
 	rm -rf bin/
 
@@ -14,3 +20,6 @@ build-server: clean
 	GOOS=linux GOARCH=amd64 go build -o ${BIN_DIR}/$(PROJECT_NAME)-server-linux cmd/server/main.go
 
 build-all: build-client build-server
+
+run-server:
+	go run cmd/server/main.go
